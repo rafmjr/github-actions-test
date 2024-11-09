@@ -1,0 +1,19 @@
+name: "Extract Integration Package"
+
+inputs:
+  text:
+    required: true
+
+outputs:
+  integration-package:
+    description: "The integration package"
+    value: ${{ steps.extract-integration-package.outputs.integration_package }}
+
+runs:
+  using: composite
+  steps:
+    - id: extract-integration-package
+      shell: bash
+      run: |
+        integration_package=$(echo "${{ inputs.text }}" | awk '/### Integration Package/{flag=1; next} flag && /`/{match($0, /`([^`]*)`/, arr); print arr[1]; exit}')
+        echo "integration_package=$integration_package" >> $GITHUB_OUTPUT
